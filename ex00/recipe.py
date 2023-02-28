@@ -6,11 +6,14 @@
 #    By: archid- <archid-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/23 22:13:50 by archid-           #+#    #+#              #
-#    Updated: 2023/02/23 23:20:07 by archid-          ###   ########.fr        #
+#    Updated: 2023/02/28 20:33:19 by archid-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+
 class Recipe(object):
+    RecipeTypeThrowPolicy = True
+    
     def __init__(self, name, cooking_lvl, cooking_time,
                  ingredients, description, recipe_type):
         """intialises the recipe object"""
@@ -40,10 +43,7 @@ class Recipe(object):
         self.description = description
         if type(recipe_type) != str:
             raise TypeError("recipe type should be an instance of `str'")
-        if not (recipe_type == 'starter' or recipe_type == 'lunch' \
-            or recipe_type == 'dessert'):
-            raise ValueError("recipe type should be either a starter dish, " \
-                "a lunch or dessert")
+        Recipe.is_valid_recipe_type(recipe_type)
         self.recipe_type = recipe_type
         
     def __str__(self):
@@ -53,5 +53,12 @@ class Recipe(object):
             self.name, self.recipe_type, self.ingredients, 
             self.cooking_time, self.cooking_lvl
         )
-    
+
+    def is_valid_recipe_type(recipe_type: str):
+        if not (recipe_type == 'starter' or recipe_type == 'lunch' or recipe_type == 'dessert'):
+            if Recipe.RecipeTypeThrowPolicy:
+                raise ValueError("recipe type should be either a starter dish, a lunch or dessert")
+            else:
+                return False
+        return True    
     
