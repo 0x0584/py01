@@ -6,7 +6,7 @@
 #    By: archid- <archid-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/23 22:13:53 by archid-           #+#    #+#              #
-#    Updated: 2023/02/28 20:53:11 by archid-          ###   ########.fr        #
+#    Updated: 2023/04/01 10:49:45 by archid-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ class RecipeUnitTest():
     def test_invalid_recipe_type_throw_policy():
         try:
             Recipe.is_valid_recipe_type('')
+            assert False
         except ValueError:
             assert True, "by default it throws ValueError"
         except:
@@ -75,6 +76,7 @@ class BookUnitTest():
     def test_invalid_ctor():
         try:
             Book(1, {})
+            assert False
         except:
             assert True, "either combination with valid argument should fail for any argument"
 
@@ -114,8 +116,17 @@ class BookUnitTest():
     def test_add_existing_recipe():
         assert not BookUnitTest.get_cookbook_instance().add_recipe(RecipeUnitTest.get_sample_recipe())
 
-    def test_add_inexisting_recipe():
+    def test_add_inexisting_valid_recipe():
         assert BookUnitTest.get_empty_cookbook_instance().add_recipe(RecipeUnitTest.get_sample_recipe())
+
+    def test_add_inexisting_invalid_recipe():
+        recipe = BookUnitTest.get_cookbook_instance().get_recipe_by_name('Tomato Salad')
+        recipe.recipe_type = 'invalid'
+        try:
+            BookUnitTest.get_empty_cookbook_instance().add_recipe(recipe)
+            assert False
+        except:
+            assert True
 
 if __name__ == '__main__':
     # Recipe Unit Testing
@@ -137,6 +148,7 @@ if __name__ == '__main__':
     BookUnitTest.test_get_recipes_by_inexisting_types()
     
     BookUnitTest.test_add_existing_recipe()
-    BookUnitTest.test_add_inexisting_recipe()
-    
+    BookUnitTest.test_add_inexisting_valid_recipe()
+    BookUnitTest.test_add_inexisting_invalid_recipe()
+
     print(">>> All Test Passed")

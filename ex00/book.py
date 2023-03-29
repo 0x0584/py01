@@ -6,7 +6,7 @@
 #    By: archid- <archid-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/23 22:13:46 by archid-           #+#    #+#              #
-#    Updated: 2023/02/28 21:19:05 by archid-          ###   ########.fr        #
+#    Updated: 2023/04/01 10:42:05 by archid-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ class Book(object):
                 raise RuntimeError()
         for key, recipes in recipes_list.items():
             if any([recipe.recipe_type != key for recipe in recipes]):
-                raise TypeError("mismatched typing")        
+                raise TypeError()        
         self.recipes_list: RecipeDict = recipes_list
 
     def get_recipe_by_name(self, name: str, stream=stdout):
@@ -41,7 +41,6 @@ class Book(object):
                 if recipe.name.lower() == name.lower():
                     return recipe
         return None
-        #return list(filter(lambda recipe_name: recipe_name.lower() == name.lower()), )
 
     def get_recipes_by_types(self, recipe_type: str):
         """Get all recipe names for a given \texttt{recipe_type}"""
@@ -51,15 +50,15 @@ class Book(object):
             raise RuntimeError()
         return self.recipes_list[recipe_type]
 
-        #return filter(lambda key: key.lower() == recipe_type.lower(), recipes)
-
     def add_recipe(self, recipe: Recipe):
         """Add a recipe to the book and update last_update"""
         if self.get_recipe_by_name(recipe.name) is not None:
             return False
         elif recipe.recipe_type in self.recipes_list.keys():
             self.recipes_list[recipe.recipe_type].append(recipe)
-        else:
+        elif Recipe.is_valid_recipe_type(recipe.recipe_type):
             self.recipes_list.setdefault(recipe.recipe_type, [recipe])
+        else:
+            raise ValueError()
         self.last_update = monotonic()
         return True

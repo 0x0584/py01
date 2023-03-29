@@ -6,10 +6,9 @@
 #    By: archid- <archid-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/23 22:13:50 by archid-           #+#    #+#              #
-#    Updated: 2023/02/28 20:33:19 by archid-          ###   ########.fr        #
+#    Updated: 2023/04/01 10:39:29 by archid-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
-
 
 class Recipe(object):
     RecipeTypeThrowPolicy = True
