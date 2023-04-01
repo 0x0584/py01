@@ -6,7 +6,7 @@
 #    By: archid- <archid-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/23 18:28:07 by archid-           #+#    #+#              #
-#    Updated: 2023/02/23 18:56:50 by archid-          ###   ########.fr        #
+#    Updated: 2023/04/01 12:43:52 by archid-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ class Evaluator(object):
         for coef, word in zip(coefs, words):
             sum_ += coef * len(word)
         return sum_
+
     def enumerate_evaluate(coefs, words):
         if len(coefs) != len(words):
             return -1
@@ -27,6 +28,11 @@ class Evaluator(object):
         return _sum
 
 if __name__ == '__main__':
+    words = ["Le", "Lorem", "Ipsum", "est", "simple"]
+    coefs = [1.0, 2.0, 1.0, 4.0, 0.5]
+    print(Evaluator.zip_evaluate(coefs, words))
+    print(Evaluator.enumerate_evaluate(coefs, words))
     words = ["Le", "Lorem", "Ipsum", "n’", "est", "pas", "simple"]
     coefs = [0.0, -1.0, 1.0, -12.0, 0.0, 42.42]
     print(Evaluator.zip_evaluate(coefs, words))
+    print(Evaluator.enumerate_evaluate(coefs, words))

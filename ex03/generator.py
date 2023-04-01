@@ -6,7 +6,7 @@
 #    By: archid- <archid-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/23 06:35:20 by archid-           #+#    #+#              #
-#    Updated: 2023/02/23 18:57:32 by archid-          ###   ########.fr        #
+#    Updated: 2023/04/01 12:38:00 by archid-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,13 @@ def generator(text, sep=" ", option=None):
     for word in words:
         yield word
         
-# if __name__ == '__main__':
-#     for word in generator(argv[1], sep=argv[2], option=argv[3]):
-#         print(word)
+if __name__ == '__main__':
+    if len(argv) == 2:
+        for word in generator(argv[1]):
+            print(word)
+    elif len(argv) == 3:
+        for word in generator(argv[1], sep=argv[2]):
+            print(word)
+    elif len(argv) == 4:
+        for word in generator(argv[1], sep=argv[2], option=argv[3]):
+            print(word)

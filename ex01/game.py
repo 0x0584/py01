@@ -6,7 +6,7 @@
 #    By: archid- <archid-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/28 21:22:54 by archid-           #+#    #+#              #
-#    Updated: 2023/03/01 02:02:21 by archid-          ###   ########.fr        #
+#    Updated: 2023/04/01 10:51:13 by archid-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,12 +29,13 @@ class Lannister(GotCharacter):
         if self.is_alive:
             self.is_alive = False
 
-# if __name__ == '__main__':
-#     foo = Lannister(first_name='0x0584', is_alive=True)
-#     print(foo.__dict__)
-#     foo.print_house_words()
-#     print(foo.is_alive)
-#     foo.die()
-#     print(foo.is_alive)
+if __name__ == '__main__':
+    foo = Lannister(first_name='0x0584', is_alive=True)
+    print(foo.__dict__)
+    print(foo.__doc__)
+    foo.print_house_words()
+    print(foo.is_alive)
+    foo.die()
+    print(foo.is_alive)
 
     

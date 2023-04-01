@@ -6,141 +6,148 @@
 #    By: archid- <archid-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/03/01 02:02:52 by archid-           #+#    #+#              #
-#    Updated: 2023/03/29 19:06:55 by archid-          ###   ########.fr        #
+#    Updated: 2023/04/01 12:27:39 by archid-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 from typing import List
 
-VectorType = List[List[float]]
+def apply_op(u, v, op):
+    if type(v) != Vector or u.shape != v.shape:
+        raise TypeError()
+    elif u.is_row_shape():
+        if len(u.values[0]) != len(v.values[0]):
+            raise ValueError()
+        return Vector([[op(p, q) for p, q in zip(u.values[0], v.values[0])]])
+    else:
+        assert u.is_column_shape()
+        if len(u.values) != len(v.values):
+            raise ValueError()
+        return Vector([[op(p[0], q[0])] for p, q in zip(u.values, v.values)])
+
+def is_row_vector(values):
+    if type(values) != list or len(values) != 1 or type(values[0]) != list:
+        return False
+    for e in values[0]:
+        if type(e) != float and type(e) != int:
+            raise TypeError()
+    return True
+
+def is_column_vector(values):
+    if type(values) != list:
+        return False
+    for e in values:
+        if type(e) != list or len(e) != 1:
+            return False
+        if type(e[0]) != float and type(e[0]) != int:
+            raise TypeError()
+    return True
 
 class Vector(object):
     ROW_SHAPE = (1, 0)
     COLUMN_SHAPE = (0, 1)
     
     def __init__(self, values):
-        """either takes a list that represents a row or column vector, a value or a range or values"""
         if type(values) == list:
-            if Vector.is_row_vector(values):
+            if is_row_vector(values):
                 self.shape = Vector.ROW_SHAPE
                 self.values = [[float(val) for val in values[0]]]
-            elif Vector.is_column_vector(values):
+            elif is_column_vector(values):
                 self.shape = Vector.COLUMN_SHAPE
                 self.values = [[float(val[0])] for val in values]
             else:
-                raise ValueError("values are neither row nor column vectors")
+                raise ValueError()
         else:
-            tmp = 0
             if type(values) == int:
-                pass
+                if values == 0:
+                    raise ValueError()
+                l, r = 0, values
             elif type(values) == tuple:
                 if values[0] >= values[1]:
                     raise ValueError()
-                tmp = values[0]
+                l, r = values[0], values[1]
             else:
                 raise TypeError()
             self.shape = Vector.COLUMN_SHAPE
-            self.values = [[float(i)] for i in range(tmp, values)]
+            self.values = [[float(i)] for i in range(l, r)]
 
-    def is_row_vector(values: VectorType) -> bool:
-        """returns false if misshaped, throws on type error"""
-        if type(values) != list or len(values) != 1 or type(values[0]) != list:
-            return False
-        for e in values[0]:
-            if type(e) != float and type(e) != int:
-                raise TypeError("Row vector should have floats")
-        return True
-
-    def is_column_vector(values: VectorType) -> bool:
-        """returns false if misshaped, throws on type error"""
-        if type(values) != list:
-            return False
-        for e in values:
-            if type(e) != list or len(e) != 1:
-                return False
-            if type(e[0]) != float and type(e[0]) != int:
-                raise TypeError("Column vector has invalid typing")
-        return True
+    def is_column_shape(self):
+        return is_column_vector(self.values)
     
-    def is_column_shape(self) -> bool:
-        return Vector.is_column_vector(self.values)
+    def is_row_shape(self):
+        return is_row_vector(self.values)
     
-    def is_row_shape(self) -> bool:
-        return Vector.is_row_vector(self.values)
-    
-    def dot(self, v: VectorType) -> float:
-        assert self.shape == v.shape
-        if self.is_row_shape():
-            return sum([u * v for u, v in zip(self.values[0])])
-        elif self.is_column_shape():
-            return sum([u[0] * v[0] for u, v in zip(self.values)])
-    
-    def T(self) -> VectorType:
-        if self.is_row_shape():
-            self.shape = Vector.COLUMN_SHAPE
-            self.values = [[val] for val in self.values[0]]
-        elif self.is_column_shape():
-            self.shape = Vector.ROW_SHAPE
-            self.values = [[val[0] for val in self.values]]
-        else:
-            assert False
-    
-    def apply_linear_operation(self, v: VectorType, op) -> VectorType:
-        if self.shape != v.shape:
-            raise TypeError("misshaped")
+    def dot(self, v):
+        if type(v) != Vector or self.shape != v.shape:
+            raise TypeError()
         elif self.is_row_shape():
             if len(self.values[0]) != len(v.values[0]):
-                raise TypeError("misshaped")
-            return Vector([[
-                op(self.values[0][i], v.values[0][i]) for i in range(v.values[0])
-            ]])
-        elif self.is_column_shape():
-            if len(self.values) != len(v.values):
-                raise TypeError("misshaped")
-            return Vector([
-                [op(self.values[i][0], v.values[i][0])] for i in range(v.values[0])
-            ])
+                raise ValueError()
+            return sum([u * v for u, v in zip(self.values[0], v.values[0])])
         else:
-            assert False
+            assert self.is_column_shape()
+            return sum([u[0] * v[0] for u, v in zip(self.values, v.values)])
     
-    def __add__(self, v: VectorType) -> VectorType:
-        return self.apply_linear_operation(v, lambda x, y: x + y)
+    def T(self):
+        if self.is_row_shape():
+            return Vector([[val] for val in self.values[0]])
+        else:
+            assert self.is_column_shape()
+            return Vector([[val[0] for val in self.values]])
     
-    def __radd__(self, v) -> VectorType:
-        return self.__add__(v)
+    def __add__(self, v):
+        return apply_op(self, v, lambda x, y: x + y)
     
-    def __sub__(self, v: VectorType) -> VectorType:
-        return self.apply_linear_operation(v, lambda x, y: x - y)
+    def __radd__(self, v):
+        return v.__add__(self)
     
-    def __rsub__(self, v: VectorType) -> VectorType:
-        return self.__sub__(v)
+    def __sub__(self, v):
+        return apply_op(self, v, lambda x, y: x - y)
     
-    def __mul__(self, e) -> VectorType:
+    def __rsub__(self, v):
+        return v.__sub__(self)
+    
+    def __mul__(self, e):
         if type(e) == int or type(e) == float:
-            return [self.values[i] * e for i in range(self.values)]
+            if self.is_row_shape():
+                return Vector([[val * e for val in self.values[0]]])
+            else:
+                assert self.is_column_shape()
+                return Vector([[val[0] * e] for val in self.values])
         else:
-            assert False
+            raise TypeError()
         
-    def __rmul__(self, e) -> VectorType:
-        return self.__mul__(e)
+    def __rmul__(self, v):
+        return self.__mul__(v)
     
-    def __truediv__(self, e) -> VectorType:
+    def __truediv__(self, e):
         if not(type(e) == int or type(e) == float):
-            raise TypeError("only scalars")
+            raise TypeError()
+        elif e == 0:
+            raise ValueError()
         if self.is_row_shape():
             return Vector([[v / e for v in self.values[0]]])
         elif self.is_column_shape():
             return Vector([[v[0] / e] for v in self.values])
         else:
             assert False
-            
-    def __str__(self) -> str:
+    
+    def __rtruediv__(self, e):
+        return self.__truediv__(e)
+
+    def __str__(self):
         return "{}".format(self.values)
     
-    def __repr__(self) -> str:
+    def __repr__(self):
         return self.__str__()
     
-    # def __eq__(self, other):
-    #     return self.shape == other.shape and self.values == other.values
+    def __eq__(self, other):
+        if type(other) != Vector:
+            return False
+        else:
+            return self.shape == other.shape and self.values == other.values
+    
+    def __ne__(self, other):
+        return not self.__eq__(other)
     
     
